@@ -5,6 +5,7 @@ var mdeps = require('module-deps'),
     graphlib = require('graphlib');
 
 var core = ['events', 'path', 'util', 'vm', 'dns', 'dgram', 'http', 'https', 'net', 'fs'];
+var ignore = new RegExp(process.argv.slice(2).join('|'));
 
 var externalModuleRegexp = process.platform === 'win32' ?
   /^(\.|\w:)/ :
@@ -19,7 +20,7 @@ var g = new graphlib.Graph({ directed: true });
 var md = mdeps({
     transform: transform,
     filter: function(id) {
-        return core.indexOf(id) === -1 && externalModuleRegexp.test(id);
+        return core.indexOf(id) === -1 && !ignore.exec(id) && externalModuleRegexp.test(id);
     }
 });
 
